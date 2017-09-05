@@ -1,21 +1,27 @@
 package android.practice.com.chronometer;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity{
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -118,6 +124,38 @@ public class MainActivity extends AppCompatActivity{
 
                 public void onFinish() {
                     showCountdown.setText(initialCountdown);
+
+                    final CheckBox mCheckBox = (CheckBox) findViewById(R.id.checkBox_Sound);
+                    if (mCheckBox.isChecked()){
+
+                        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        MediaPlayer mediaPlayer = new MediaPlayer();
+
+                        try {
+                            mediaPlayer.setDataSource(getApplicationContext(), defaultRingtoneUri);
+                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+                            mediaPlayer.prepare();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                                @Override
+                                public void onCompletion(MediaPlayer mp)
+                                {
+                                    mp.release();
+                                }
+                            });
+                            mediaPlayer.start();
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        } catch (SecurityException e) {
+                            e.printStackTrace();
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                 }
             }.start();
         }

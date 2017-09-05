@@ -13,4 +13,5 @@
     <string name="button_4_00">4:00</string>
     <string name="button_3_30">3:30</string>
     <string name="textview_0_00">0:00</string>
+    <string name="sound">Sound</string>
 </resources>
