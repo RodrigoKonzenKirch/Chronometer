@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity{
 
-
+    private CountDownTimer mCounter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity{
         final String buttonStartText = "Start";
         final String buttonPauseText = "Pause";
         final String buttonResumeText = "Resume";
+
 
         final CustomChronometer myChronometer = new CustomChronometer((Chronometer) findViewById(R.id.chronometer));
         myChronometer.SetUpChronometer();
@@ -76,89 +77,88 @@ public class MainActivity extends AppCompatActivity{
                 capturedTime1.setText(myChronometer.GetCurrentCustomChronometerTime());
             }
         });
-
     }
 
     public void countdownButtonClicked(final View v){
         final String initialCountdown = "0:00";
         final TextView showCountdown = (TextView) findViewById(R.id.textView_countdown);
         long milliseconds=0;
-        if (showCountdown.getText().equals(initialCountdown)) {
-            switch (v.getId()) {
-                case R.id.button_countdown01:
-                    milliseconds = 30000;
-                    break;
-                case R.id.button_countdown02:
-                    milliseconds = 60000;
-                    break;
-                case R.id.button_countdown03:
-                    milliseconds = 90000;
-                    break;
-                case R.id.button_countdown04:
-                    milliseconds = 120000;
-                    break;
-                case R.id.button_countdown05:
-                    milliseconds = 150000;
-                    break;
-                case R.id.button_countdown06:
-                    milliseconds = 180000;
-                    break;
-                case R.id.button_countdown07:
-                    milliseconds = 210000;
-                    break;
-                case R.id.button_countdown08:
-                    milliseconds = 240000;
-                    break;
-            }
-            new CountDownTimer(milliseconds, 1000) {
-                public void onTick(long millisecondsUntilFinish) {
-                    long s = millisecondsUntilFinish / 1000;
-                    if (s < 60) {
-                        showCountdown.setText(s < 10 ? "0:0" + s : "0:" + s);
-                    } else {
-                        long m = s / 60;
-                        s = s % 60;
-                        showCountdown.setText(m + ":" + (s < 10 ? "0" + s : +s));
-                    }
-                }
-
-                public void onFinish() {
-                    showCountdown.setText(initialCountdown);
-
-                    final CheckBox mCheckBox = (CheckBox) findViewById(R.id.checkBox_Sound);
-                    if (mCheckBox.isChecked()){
-
-                        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-                        MediaPlayer mediaPlayer = new MediaPlayer();
-
-                        try {
-                            mediaPlayer.setDataSource(getApplicationContext(), defaultRingtoneUri);
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-                            mediaPlayer.prepare();
-                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                                @Override
-                                public void onCompletion(MediaPlayer mp)
-                                {
-                                    mp.release();
-                                }
-                            });
-                            mediaPlayer.start();
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            }.start();
+        if (mCounter != null)
+            mCounter.onFinish();
+        switch (v.getId()) {
+            case R.id.button_countdown01:
+                milliseconds = 30000;
+                break;
+            case R.id.button_countdown02:
+                milliseconds = 60000;
+                break;
+            case R.id.button_countdown03:
+                milliseconds = 90000;
+                break;
+            case R.id.button_countdown04:
+                milliseconds = 120000;
+                break;
+            case R.id.button_countdown05:
+                milliseconds = 150000;
+                break;
+            case R.id.button_countdown06:
+                milliseconds = 180000;
+                break;
+            case R.id.button_countdown07:
+                milliseconds = 210000;
+                break;
+            case R.id.button_countdown08:
+                milliseconds = 240000;
+                break;
         }
-    }
 
+        mCounter = new CountDownTimer(milliseconds, 1000) {
+            public void onTick(long millisecondsUntilFinish) {
+                long s = millisecondsUntilFinish / 1000;
+                if (s < 60) {
+                    showCountdown.setText(s < 10 ? "0:0" + s : "0:" + s);
+                } else {
+                    long m = s / 60;
+                    s = s % 60;
+                    showCountdown.setText(m + ":" + (s < 10 ? "0" + s : +s));
+                }
+            }
+
+            public void onFinish() {
+                showCountdown.setText(initialCountdown);
+
+                final CheckBox mCheckBox = (CheckBox) findViewById(R.id.checkBox_Sound);
+                if (mCheckBox.isChecked()){
+
+                    Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+
+                    try {
+                        mediaPlayer.setDataSource(getApplicationContext(), defaultRingtoneUri);
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+                        mediaPlayer.prepare();
+                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                            @Override
+                            public void onCompletion(MediaPlayer mp)
+                            {
+                                mp.release();
+                            }
+                        });
+                        mediaPlayer.start();
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mCounter.cancel();
+            }
+        }.start();
+    }
 }
